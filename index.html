@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This is an example of using zingchart incorporated into a dashboard.">
+    <meta name="author" content="">
+
+    <title>Dashboard Example</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            padding-top: 10px;
+        }
+    </style>
+
+    <!-- Load ZingChart -->
+    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+
+</head>
+
+<body class="body-bg">
+
+<!-- Page Content -->
+<div class="container-fluid" style="padding-left:30px;padding-right:30px">
+    <!-- <form action="genDB.php" method="POST">
+        <button type="submit">Generate Data</button>
+    </form> -->
+
+    <div class="row">
+
+        <div class="col-md-3">
+            <img src="https://examples.zingchart.com/dashboards/php/imgs/zingchart_logo.png" width="100%" height="100%">
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading font-heading-center">Max Revenue</div>
+                <div class="panel-body font-revenue" id="chart1-maxValue"></div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="panel panel-default">
+                <div class="panel-heading font-heading-center">Operations</div>
+                <div class="panel-body">
+                    <div class="col-md-3">
+                        <label for="plans-selector">Plan</label>
+                        <select id="plans-selector" class="form-control"></select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="date-interval">Interval</label>
+                        <select id="date-interval" class="form-control">
+                            <option>days</option>
+                            <option>weeks</option>
+                            <option>months</option>
+                            <option>years</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="year-selector">Year</label>
+                        <select id="year-selector" class="form-control">
+                            <option>all</option>
+                            <option>2016</option>
+                            <option>2015</option>
+                            <option>2014</option>
+                            <option>2013</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="trendline">Trendline</label>
+                        <a class="btn btn-default btn-block" id="trendline">Off</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="chart1" class="card-view"></div>
+    </div>
+
+    <div class="row" id="breakout-data">
+    </div>
+
+    <br>
+    <!-- Revenue over quarters from selected year -->
+    <div class="row">
+        <div class="col-md-3">
+             <div class="panel panel-default font-med">
+                <div class="panel-heading text-muted">1st Quarter</div>
+                <div class="panel-body" id="quarter1">-------</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default font-med">
+                <div class="panel-heading text-muted">2nd Quarter</div>
+                <div class="panel-body" id="quarter2">-------</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default font-med">
+                <div class="panel-heading text-muted">3rd Quarter</div>
+                <div class="panel-body" id="quarter3">-------</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default font-med">
+                <div class="panel-heading text-muted">4th Quarter</div>
+                <div class="panel-body" id="quarter4">-------</div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading font-heading">Monthly Plans</div>
+                <div class="panel-body no-padding">
+                    <table class="table-striped col-md-12" id="monthlyPlansTable">
+                        <tr>
+                            <td class="col-md-3 text-primary font-med">
+                                Plan Type
+                            </td>
+                            <td class="col-md-3 text-primary font-med">
+                                Number Of Users
+                            </td>
+                            <td class="col-md-3 text-primary font-med">
+                                Cost
+                            </td>
+                            <td class="col-md-3 text-primary font-med">
+                                Total Revenue
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading font-heading">Plans Breakout</div>
+                <div class="panel-body">
+                    <div id="chart2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load the graphs -->
+<script src="js/zingchartGraphs.js"></script>
+
+<!-- jQuery Version 2.1.4-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+</body>
+
+</html>

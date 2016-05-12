@@ -1,0 +1,28 @@
+{
+  "name": "ZC-Mean_Testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.0.0-rc.1",
+    "body-parser": "^1.15.0",
+    "chalk": "^1.1.1",
+    "ejs": "^2.4.1",
+    "expect": "^1.15.2",
+    "express": "^4.13.4",
+    "fs": "0.0.2",
+    "mkdirp": "^0.5.1",
+    "mocha": "^2.4.5",
+    "mongoose": "^4.4.6",
+    "selenium-webdriver": "^2.53.1",
+    "walk": "^2.3.9",
+    "webdriverio": "^3.4.0"
+  }
+}
