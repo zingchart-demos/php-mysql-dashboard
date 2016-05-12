@@ -1,4 +1,19 @@
 // ############################################### HELPER FUNCTIONS ####################################################
+function updateTitle() {
+  var interval = document.getElementById('date-interval').value;
+  interval = interval.charAt(0).toUpperCase() + interval.substring(1);
+  var year = document.getElementById('year-selector').value;
+  var plan = document.getElementById('plans-selector').value;
+  plan = plan.charAt(0).toUpperCase() + plan.substring(1);
+
+  var title = 'Revenue For ' + plan + ' Plans\nGrouped by ' + interval;
+  if (year != 'all') {
+    title += ' in ' + year;
+  }
+
+  myConfig1.title.text = title;
+}
+
 /**
  * Formats a value to be prepended with $ and enforces 'c' decimal places
  * @param c - number of decimal places
@@ -139,6 +154,9 @@ function loadPlanToChart(event) {
   // Get the value from the year-selector element
   var year = document.getElementById('year-selector').value;
 
+  // Update the chart title to reflect this new interval
+  updateTitle();
+
   var xhr = new XMLHttpRequest();
   xhr.open("GET", "chart1_feed.php?plan=" + selectedPlan);
   xhr.setRequestHeader("Content-Type", "application/json");
@@ -225,9 +243,11 @@ function plotTrendline() {
  * Displays the valueBox in the center of the donut chart
  * @param p
  */
-function displayValueBoxGraph2(p) {
+function displayValueBoxGraph2(p, plotData) {
   var plotIndex = p.plotindex;
-  var ruleTemplate = {
+
+  if (inAPieSlice == false) {
+    var ruleTemplate = {
     'rules':[]
   };
 
@@ -239,11 +259,17 @@ function displayValueBoxGraph2(p) {
     data : {
       'plot': {
         'value-box': {
+          'decimals': 2,
+          'text': "%t: <br>$%v",
           'rules': ruleTemplate['rules'],
+          'font-color': plotData.backgroundColor1
         }
       }
     }
   });
+
+  inAPieSlice = true;
+  }
 }
 
 /**
@@ -251,6 +277,9 @@ function displayValueBoxGraph2(p) {
  */
 function organizeByDays() {
   zingchart.exec('chart1', 'setdata', {data: myConfig1});
+
+  // Update the chart title to reflect this new interval
+  updateTitle();
 }
 
 /**
@@ -275,6 +304,9 @@ function appendOptionToPlanSelector(data) {
 function organizeByInterval() {
   var interval = document.getElementById('date-interval').value;
   var year = document.getElementById('year-selector').value;
+
+  // Update the chart title to reflect this new interval
+  updateTitle();
 
   // disable the Year Selector
   var yearSelector = document.getElementById('year-selector');
@@ -368,6 +400,9 @@ function filterByYear(config, year) {
   var quarter4 = document.getElementById('quarter4');
   var interval = document.getElementById('date-interval').value;
   var oldConfig = config;
+
+  // Update the chart title to reflect this new interval
+  updateTitle();
 
   if (year == 'all') {
     quarter1.innerHTML = '-------';
@@ -516,12 +551,9 @@ function filterByYear(config, year) {
     // we need to confirm that Jan 1 <selectedYear> exists in the series data before we can zoom to it
     for (var index = 0; index < newConfig.scaleX.values.length; index++) {
       if (newConfig.scaleX.values[index] >= sDate) {
-        console.log('Yes!');
         sDate = newConfig.scaleX.values[index];
-        console.log('sDate: ', new Date(sDate));
         break;
       } else {
-        console.log('Nope');
       }
     }
 
@@ -599,9 +631,9 @@ function appendRowsToMonthlyPlansTable(response) {
     );
 
     // This sets the default donut-slice to be detached so the user will know which slice they are viewing by default
-    if (i == 0) {
-      myConfig2.series[0].detached = true;
-    }
+    // if (i == 0) {
+    //   myConfig2.series[0].detached = true;
+    // }
   }
 
   // Append one more table-row that is to be the sum totals of all plans
@@ -653,6 +685,9 @@ window.onload = function() {
 
     document.getElementById('year-selector').options[2].selected = true;
 
+    // Update the chart title to reflect this new interval
+    updateTitle();
+
     // Print the Max Revenue
     document.getElementById('chart1-maxValue').innerHTML = (data.maxRevenue).formatMoney(2);
   });
@@ -699,6 +734,9 @@ var myConfig1 = {
   "utc": true, // Must set utc because zingchart pulls from your local computer time
   labels:[{}],
   plotarea:{},
+  title:{
+    text: "Revenue For Personal Plans\nGrouped by Days"
+  },
   plot:{
     aspect: "spline",
     activeArea:true,
@@ -799,6 +837,7 @@ var myConfig1 = {
 var myConfig2 = {
   type: 'pie',
   plot:{
+    detach: false,
     cursor: 'hand',
     valueBox: {
       fontSize: 14
@@ -807,7 +846,7 @@ var myConfig2 = {
     valueBox:{
       decimal: 2,
       thousandsSeparator: ",",
-      text:"%t: <br>$%v</span> ", //Value box text.
+      text: "",             //"%t: <br>$%v", //Value box text.
       placement:'center',   //Value box placement is centered.
       fontColor:'black',
       fontSize:30,
@@ -850,6 +889,7 @@ var myConfig2 = {
       markerStyle:'circle',
       fontColor:'#3f3f3f',
       fontSize:10,
+      decimals: 2,
       text:"%t $%v <span style='font-style:italic; color:#cacaca; padding-right:20px;'>( %npv% )</span>"
     }
   },
@@ -868,20 +908,52 @@ var myConfig2 = {
  * will return and the id of the graph which fired the
  * event
  */
-zingchart.node_click = function(p) {
+// zingchart.node_click = function(p) {
+//   var graphId = p.id;
+
+//   switch(graphId) {
+//     case 'chart1':
+//       break;
+//     case 'chart2':
+//       displayValueBoxGraph2(p);
+//       break;
+//     default:
+//       break;
+//   }
+// }
+
+var inAPieSlice = false;
+var currentPieIndex = 1;
+zingchart.node_mouseover = function(p) {
+  var graphId = p.id;
+
+  var plotindexData = zingchart.exec('chart2', 'getobjectinfo', {
+    object: 'plot',
+    plotindex: p.plotindex
+  });
+
+  switch(graphId) {
+    case 'chart1': break;
+    case 'chart2':
+      if (p.plotindex != currentPieIndex) {
+        displayValueBoxGraph2(p, plotindexData);
+      } else {}//do nothing
+      break;
+    default: break;
+  }
+}
+zingchart.node_mouseout = function(p) {
   var graphId = p.id;
 
   switch(graphId) {
-    case 'chart1':
+    case 'chart1': break;
+    case 'chart2': 
+      inAPieSlice = false;
+      currentPieIndex = p.plotindex;
       break;
-    case 'chart2':
-      displayValueBoxGraph2(p);
-      break;
-    default:
-      break;
+    default: break;
   }
 }
-
 
 // ############################## Adding event listeners for graph interactions ########################################
 document.getElementById('trendline').addEventListener('click', toggleTrendline);
@@ -896,14 +968,6 @@ document.getElementById('year-selector').addEventListener('change', function(ev)
     filterByYear(organizeByInterval(), this.value);
   } else {
     filterByYear(myConfig1, this.value);
-    //if (this.value == 'all') {
-    //  zingchart.exec('chart1', 'setdata', {data: myConfig1});
-    //  if (document.getElementById('trendline').classList.contains('btn-info')) {
-    //    plotTrendline();
-    //  }
-    //} else {
-    //  filterByYear(myConfig1, this.value);
-    //}
   }
 });
 
